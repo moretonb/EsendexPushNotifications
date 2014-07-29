@@ -1,0 +1,97 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+<div class="jumbotron">
+    <h1>Some Notification Application</h1>
+</div>
+
+<div id="body">
+    <section class="content-wrapper main-content clear-fix">
+        <h2>Inbound Messages</h2>
+        <div id="inboundConsole" data-bind="template: {name: 'inboundMessageTemplate', foreach: inboundMessages, afterAdd: resizeChat}">
+        </div>
+
+        <script type="text/html" id="inboundMessageTemplate">
+            <p>
+                From:<strong data-bind="text: From"></strong><br />
+                To:<strong data-bind="text: To"></strong><br />
+                Message:<strong data-bind="text: MessageText"></strong><br />
+                AccountId:<strong data-bind="text: AccountId"></strong>
+            </p>
+        </script>
+    </section>
+    <section class="content-wrapper main-content clear-fix">
+        <h2>Delivered Messages</h2>
+        <div id="deliveredConsole" data-bind="template: {name: 'deliveredMessageTemplate', foreach: deliveredMessages, afterAdd: resizeChat}">
+        </div>
+
+        <script type="text/html" id="deliveredMessageTemplate">
+            <p>
+                <small data-bind="text: OccuredAt"></small><br />
+                MessageId:<strong data-bind="text: MessageId"></strong><br />
+                AccountId:<strong data-bind="text: AccountId"></strong>
+            </p>
+        </script>
+    </section>
+</div>
+
+@Scripts.Render("~/bundles/jquery")
+
+<script src="@Url.Content("~/Scripts/knockout-2.0.0.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/knockout.mapping-latest.js")" type="text/javascript"></script>
+
+<script>
+    var viewModel = {
+        inboundMessages: ko.observableArray([]),
+        deliveredMessages: ko.observableArray([])
+    }
+    viewModel.resizeChat = function () {
+        console.log("resize chat");
+        $("#inboundConsole").scrollTop($("#inboundConsole")[0].scrollHeight);
+        $("#deliveredConsole").scrollTop($("#deliveredConsole")[0].scrollHeight);
+    };
+
+    $(document).ready(function () {
+        console.log("document ready");
+        ko.applyBindings(viewModel);
+
+        if (!!window.EventSource) {
+            console.log("event source available");
+            var inboundSource = new EventSource('http://esendexpushnotifications.azurewebsites.net/api/inboundmessages/');
+            inboundSource.addEventListener('message', function (e) {
+                console.log("inbox event recieved");
+                var json = JSON.parse(e.data);
+                console.log("inbox event json: " + JSON.stringify(json));
+                viewModel.inboundMessages.push(json);
+                console.log("inbox event recieved");
+            }, false);
+            inboundSource.addEventListener('open', function (e) {
+                console.log("inbox open!");
+            }, false);
+            inboundSource.addEventListener('error', function (e) {
+                if (e.readyState == EventSource.CLOSED) {
+                    console.log("inbox error!");
+                }
+            }, false);
+
+            var deliveredSource = new EventSource('http://esendexpushnotifications.azurewebsites.net/api/deliveredmessages/');
+            deliveredSource.addEventListener('message', function (e) {
+                console.log("delivery event recieved");
+                var json = JSON.parse(e.data);
+                viewModel.deliveredMessages.push(json);
+            }, false);
+            deliveredSource.addEventListener('open', function (e) {
+                console.log("deliver open!");
+            }, false);
+            deliveredSource.addEventListener('error', function (e) {
+                if (e.readyState == EventSource.CLOSED) {
+                    console.log("deliver error!");
+                }
+            }, false);
+        } else {
+            // not supported!
+            //fallback to something else
+        }
+    });
+</script>
