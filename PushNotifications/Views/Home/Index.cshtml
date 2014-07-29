@@ -58,7 +58,7 @@
 
         if (!!window.EventSource) {
             console.log("event source available");
-            var inboundSource = new EventSource('http://esendexpushnotifications.azurewebsites.net/api/inboundmessages/');
+            var inboundSource = new EventSource('/api/inboundmessages/');
             inboundSource.addEventListener('message', function (e) {
                 console.log("inbox event recieved");
                 var json = JSON.parse(e.data);
@@ -75,7 +75,7 @@
                 }
             }, false);
 
-            var deliveredSource = new EventSource('http://esendexpushnotifications.azurewebsites.net/api/deliveredmessages/');
+            var deliveredSource = new EventSource('/api/deliveredmessages/');
             deliveredSource.addEventListener('message', function (e) {
                 console.log("delivery event recieved");
                 var json = JSON.parse(e.data);

@@ -2,9 +2,7 @@
 using PushNotifications.Models;
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
@@ -20,23 +18,23 @@ namespace PushNotifications.Controllers
         [HttpPost]
         public void Post([FromBody]XElement xml)
         {
-            StringReader reader = new StringReader(xml.ToString());
-            XmlSerializer xmlSerializer = new XmlSerializer(typeof(MessageDelivered));
+            var reader = new StringReader(xml.ToString());
+            var xmlSerializer = new XmlSerializer(typeof(MessageDelivered));
             var deliveredMessage = (MessageDelivered)xmlSerializer.Deserialize(reader);
             MessageCallback(deliveredMessage);
         }
 
         public HttpResponseMessage Get(HttpRequestMessage request)
         {
-            HttpResponseMessage response = request.CreateResponse();
-
+            var response = request.CreateResponse();
+            response.Headers.Add("Cache-Control", "no-cache");
             response.Content = new PushStreamContent((Action<Stream, HttpContent, TransportContext>)OnStreamAvailable, "text/event-stream");
             return response;
         }
 
         private static void OnStreamAvailable(Stream stream, HttpContent headers, TransportContext context)
         {
-            StreamWriter streamwriter = new StreamWriter(stream);
+            var streamwriter = new StreamWriter(stream);
             _streammessage.Enqueue(streamwriter);
         }
 
