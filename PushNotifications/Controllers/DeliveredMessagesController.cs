@@ -42,8 +42,16 @@ namespace PushNotifications.Controllers
         {
             foreach (var subscriber in _streammessage)
             {
-                subscriber.WriteLine("data:" + JsonConvert.SerializeObject(m) + "\n");
-                subscriber.Flush();
+                try
+                {
+                    subscriber.WriteLine("data:" + JsonConvert.SerializeObject(m) + "\n");
+                    subscriber.Flush();
+                }
+                catch (Exception)
+                {
+                    subscriber.Close();
+                    subscriber.Dispose();
+                }
             }
         }
     }
