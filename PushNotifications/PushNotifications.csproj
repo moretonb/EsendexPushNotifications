@@ -154,6 +154,8 @@
     <Compile Include="Controllers\ApiControllerWithHub.cs" />
     <Compile Include="Controllers\DeliveredMessagesController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Models\AccountEventHandlerOptions.cs" />
+    <Compile Include="Controllers\AppMessagesController.cs" />
     <Compile Include="Controllers\InboundMessagesController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>

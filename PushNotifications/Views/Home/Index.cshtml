@@ -25,6 +25,21 @@
                 AccountId:<strong data-bind="text: accountId"></strong>
             </li>
         </ul>
+        <h2>App Messages</h2>
+        <ul data-bind="foreach: appMessages">
+            <li>
+                username:<strong data-bind="text: username"></strong><br />
+                account:<strong data-bind="text: account"></strong><br />
+                notificationType:<strong data-bind="text: notificationType"></strong><br />
+                id:<strong data-bind="text: id"></strong><br />
+                originator:<strong data-bind="text: originator"></strong><br />
+                recipient:<strong data-bind="text: recipient"></strong><br />
+                body:<strong data-bind="text: body"></strong><br />
+                type:<strong data-bind="text: type"></strong><br />
+                sentAt:<strong data-bind="text: sentAt"></strong><br />
+                receivedAt:<strong data-bind="text: receivedAt"></strong><br />
+            </li>
+        </ul>
     </section>
 </div>
 

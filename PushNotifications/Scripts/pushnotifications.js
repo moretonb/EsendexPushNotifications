@@ -13,6 +13,21 @@ function DeliveredMessage(occurredAt, messageId, accountId) {
     self.accountId = accountId;
 }
 
+function AppMessage(username, password, account, notificationType, id, originator, recipient, body, type, sentAt, receivedAt) {
+    var self = this;
+    self.username = username;
+    self.password = password;
+    self.account = account;
+    self.notificationType = notificationType;
+    self.id = id;
+    self.originator = originator;
+    self.recipient = recipient;
+    self.body = body;
+    self.type = type;
+    self.sentAt = sentAt;
+    self.receivedAt = receivedAt;
+}
+
 function AppViewModel() {
     var self = this;
     self.inboundMessages = ko.observableArray([]);
@@ -25,6 +40,12 @@ function AppViewModel() {
     self.addDeliveredMessage = function (m) {
         var message = new DeliveredMessage(m.OccurredAt, m.MessageId, m.AccountId);
         self.deliveredMessages.push(message);
+    }
+
+    self.appMessages = ko.observableArray([]);
+    self.addAppMessage = function (m) {
+        var message = new AppMessage(m.username, m.password, m.account, m.notificationType, m.id, m.originator, m.recipient, m.body, m.type, m.sentAt, m.receivedAt);
+        self.appMessages.push(message);
     }
 }
 
@@ -39,6 +60,10 @@ $(document).ready(function () {
 
     hub.client.addNewDeliveredMessageToPage = function (message) {
         viewModel.addDeliveredMessage(message);
+    };
+
+    hub.client.addNewAppMessageToPage = function (message) {
+        viewModel.addAppMessage(message);
     };
 
     $.connection.hub.start();
