@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using PushNotifications.Hubs;
 using PushNotifications.Models;
 using System;
 using System.Collections.Concurrent;
@@ -11,48 +12,17 @@ using System.Xml.Serialization;
 
 namespace PushNotifications.Controllers
 {
-    public class DeliveredMessagesController : ApiController
+    public class DeliveredMessagesController : ApiControllerWithHub<MessagesHub>
     {
-        private static readonly ConcurrentQueue<StreamWriter> _streammessage = new ConcurrentQueue<StreamWriter>();
-
         [HttpPost]
-        public void Post([FromBody]XElement xml)
+        public HttpStatusCode Post([FromBody]XElement xml)
         {
             var reader = new StringReader(xml.ToString());
             var xmlSerializer = new XmlSerializer(typeof(MessageDelivered));
             var deliveredMessage = (MessageDelivered)xmlSerializer.Deserialize(reader);
-            MessageCallback(deliveredMessage);
-        }
 
-        public HttpResponseMessage Get(HttpRequestMessage request)
-        {
-            var response = request.CreateResponse();
-            response.Headers.Add("Cache-Control", "no-cache");
-            response.Content = new PushStreamContent((Action<Stream, HttpContent, TransportContext>)OnStreamAvailable, "text/event-stream");
-            return response;
-        }
-
-        private static void OnStreamAvailable(Stream stream, HttpContent headers, TransportContext context)
-        {
-            var streamwriter = new StreamWriter(stream);
-            _streammessage.Enqueue(streamwriter);
-        }
-
-        private static void MessageCallback(MessageDelivered m)
-        {
-            foreach (var subscriber in _streammessage)
-            {
-                try
-                {
-                    subscriber.WriteLine("data:" + JsonConvert.SerializeObject(m) + "\n");
-                    subscriber.Flush();
-                }
-                catch (Exception)
-                {
-                    subscriber.Close();
-                    subscriber.Dispose();
-                }
-            }
+            Hub.Clients.All.addNewDeliveredMessageToPage(deliveredMessage);
+            return HttpStatusCode.OK;
         }
     }
 }
