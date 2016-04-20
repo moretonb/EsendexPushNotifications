@@ -13,6 +13,14 @@ function DeliveredMessage(occurredAt, messageId, accountId) {
     self.accountId = accountId;
 }
 
+function OptOut(from, accountReference, id, accountId) {
+    var self = this;
+    self.from = from;
+    self.accountReference = accountReference;
+    self.id = id;
+    self.accountId = accountId;
+}
+
 function AppMessage(username, password, account, notificationType, id, originator, recipient, body, type, sentAt, receivedAt) {
     var self = this;
     self.username = username;
@@ -47,6 +55,12 @@ function AppViewModel() {
         var message = new AppMessage(m.username, m.password, m.account, m.notificationType, m.id, m.originator, m.recipient, m.body, m.type, m.sentAt, m.receivedAt);
         self.appMessages.push(message);
     }
+
+    self.optOuts = ko.observableArray([]);
+    self.addOptOut = function (m) {
+        var message = new OptOut(m.From.PhoneNumber, m.AccountReference, m.Id, m.AccountId);
+        self.optOuts.push(message);
+    }
 }
 
 $(document).ready(function () {
@@ -64,6 +78,10 @@ $(document).ready(function () {
 
     hub.client.addNewAppMessageToPage = function (message) {
         viewModel.addAppMessage(message);
+    };
+
+    hub.client.addOptOutToPage = function (message) {
+        viewModel.addOptOut(message);
     };
 
     $.connection.hub.start();

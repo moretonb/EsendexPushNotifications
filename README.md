@@ -16,7 +16,7 @@ example raw input to post to the inbound message controller
 </InboundMessage>
 ```
 
-example raw input to post to the delivered messages controller
+example raw input to post to the delivered message controller
 ----------------------------------------------------------------------
 ```xml
 <MessageDelivered>
@@ -25,6 +25,21 @@ example raw input to post to the delivered messages controller
  <AccountId>6145d724-98cb-41a2-8c4e-4b81ef694897</AccountId>
  <OccurredAt>2014-07-31T21:42:46</OccurredAt>
 </MessageDelivered>
+```
+
+example raw input to post to the optout controller
+----------------------------------------------------------------------
+```xml
+<OptOut>
+  <Id>436332c6-8755-41bf-abde-cc48eafacba0</Id>
+  <AccountId>f6462f9d-87a2-4cac-97a6-5a2d9cb81997</AccountId>
+  <AccountReference>EX0010000</AccountReference>
+  <ReceviedAt>2015-11-09T15:18:19Z</ReceviedAt>
+  <From>
+     <PhoneNumber>447728693111</PhoneNumber>
+  </From>
+  <Link rel="optout" href="https://api.esendex.com/v1.0/optouts/436332c6-8755-41bf-abde-cc48eafacba0" />
+</OptOut>
 ```
 
 example form to post to the app messages controller
